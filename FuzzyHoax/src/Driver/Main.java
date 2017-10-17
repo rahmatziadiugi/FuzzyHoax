@@ -5,6 +5,7 @@
  */
 package Driver;
 
+import Fuzzy.Logic;
 import java.util.ArrayList;
 
 /**
@@ -43,8 +44,16 @@ public class Main {
         trainSet.add(new Data("B18", 50, 95, 1));
         trainSet.add(new Data("B19", 100, 18, 0));
         trainSet.add(new Data("B20", 11, 99, 1));
-        new Graph(trainSet, "Data Hoax");        
+        //new Graph(trainSet, "Data Hoax");        
         
+        validSet = (ArrayList<Data>) trainSet.clone();       
+        
+        Logic fuzzyLogic = new Logic();
+        for(int i=0; i<validSet.size(); i++){
+            validSet.set(i,fuzzyLogic.ExecuteFuzzy(validSet.get(i)));
+        }
+                
+        new Graph(validSet, "Data Validasi");        
         
         //data test
         testSet.clear();
