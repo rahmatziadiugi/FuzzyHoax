@@ -14,24 +14,34 @@ import java.util.ArrayList;
  */
 public class Logic {
     //x emosi, y provokasi
-    private ArrayList<Integer> inputxno = new ArrayList<>();
-    private ArrayList<Integer> inputyno = new ArrayList<>();
-    private ArrayList<Integer> inputino = new ArrayList<>();
-    private ArrayList<Double> valx = new ArrayList<>();
-    private ArrayList<Double> valy = new ArrayList<>();
-    private ArrayList<Double> vali = new ArrayList<>();
-    private double layak0=0.0, layak1=0.0;
+    private ArrayList<Integer> inputxno;
+    private ArrayList<Integer> inputyno;
+    private ArrayList<Integer> inputino;
+    private ArrayList<Double> valx;
+    private ArrayList<Double> valy;
+    private ArrayList<Double> vali;
+    private ArrayList<Double> inferenceVal = new ArrayList<>();
+    private double layak0, layak1;
     
     public Data ExecuteFuzzy(Data data){
+        this.inputxno = new ArrayList<>();
+        this.inputyno = new ArrayList<>();
+        this.inputino = new ArrayList<>();
+        this.valx = new ArrayList<>();
+        this.valy = new ArrayList<>();
+        this.vali = new ArrayList<>();
+        this.layak0=0.0;
+        this.layak1=0.0;
+        
         /*---Fuzzification---*/
         fuzzification(data);
         
         /*---Inference---*/
-        inference();
+        inference();        
         
         /*---Defuzzification---*/        
         data.setHoax(mamdani());
-        //data.setHoax(sugeno());
+//        data.setHoax(sugeno());
         
         return data;        
     }
@@ -114,7 +124,7 @@ public class Logic {
     /*
     y\x|0|1|2
       0|0|0|1
-      1|0|1|1
+      1|0|1|0
     
     */
     private void inference(){
@@ -130,8 +140,8 @@ public class Logic {
             this.inputino.add(1);            
         }else if (this.inputxno.get(x)==1 && this.inputyno.get(y)==1){
             this.inputino.add(1);
-        }else if (this.inputxno.get(x)==1 && this.inputyno.get(y)==2){
-            this.inputino.add(1);
+//        }else if (this.inputxno.get(x)==1 && this.inputyno.get(y)==2){
+//            this.inputino.add(1);
         }else{
             this.inputino.add(0);
         }
@@ -146,8 +156,8 @@ public class Logic {
     /*---Defuzzification---*/
     /*
     mamdani
-    0:rendah:0-80 | 0-50(1); 50-70(downhill)
-    1:tinggi:50-100 | 50-70(uphill); 70-100(1)
+    0:rendah:0-80 | 0-40(1); 0-60(downhill)
+    1:tinggi:50-100 | 40-60(uphill); 60-100(1)
     */
     private int mamdani(){
         for(int i=0; i<this.inputino.size(); i++){
@@ -162,28 +172,65 @@ public class Logic {
                     this.layak1 = this.vali.get(i);
                 }
             }
-        }
+        }        
         //center gravity
         // a+b/c+d
         double a=0.0, b=0.0, c=0.0, d=0.0;
         
-        System.out.println(layak0+" "+layak1);
-        
-        if(this.layak0<this.layak1){
-            a=(10+20+30+40)*layak0;
-            b=(50+60+70+80+90+100)*layak1;
-            c=4*layak0;
-            d=6*layak1;
-        }else{
-            a=(10+20+30+40+50+60)*layak0;
-            b=(60+70+80+90+100)*layak1;
-            c=6*layak0;
-            d=4*layak1;
+        for(int i=0; i<=40; i+=2){
+            a+=(i*layak0);
+            c+=layak0;
         }
+        for(int i=42; i<=50; i+=2){
+            double t= (70-i)*1.0/70-50;
+            if(layak0<t && layak0>layak1){
+                a+=(i*layak0);
+                c+=layak0;
+            }else if(layak1<t && layak0<layak1){
+                b+=(i*layak1);
+                d+=layak1;
+            }else if(layak0!=0.0){
+                a+=(i*t);
+                c+=t;
+            }
+        }
+        for(int i=52; i<=60; i+=2){
+            double t= (i-50)*1.0/70-50;
+            if(layak0<t && layak0>layak1){
+                a+=(i*layak0);
+                c+=layak0;
+            }else if(layak1<t && layak0<layak1){
+                b+=(i*layak1);
+                d+=layak1;
+            }else if(layak1!=0.0){
+                a+=(i*t);
+                c+=t;
+            }
+        }
+        for(int i=62; i<=100; i+=2){
+            b+=(i*layak1);
+            d+=layak1;
+        }               
+                
+//        if(this.layak0<this.layak1){
+//            a=(10+20+30+40)*layak0;
+//            b=(50+60+70+80+90+100)*layak1;
+//            c=4*layak0;
+//            d=6*layak1;
+//        }else{
+//            a=(10+20+30+40+50+60)*layak0;
+//            b=(60+70+80+90+100)*layak1;
+//            c=6*layak0;
+//            d=4*layak1;
+//        }
         
-        double y = (a+b)/(c+d);        
+        double y = (a+b)/(c+d);    
         
-        if(y>65){
+        System.out.println(y);
+        
+//        return y;
+                
+        if(y>50.0){
             return 1;
         }else{
             return 0;

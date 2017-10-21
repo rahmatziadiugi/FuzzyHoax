@@ -44,16 +44,48 @@ public class Main {
         trainSet.add(new Data("B18", 50, 95, 1));
         trainSet.add(new Data("B19", 100, 18, 0));
         trainSet.add(new Data("B20", 11, 99, 1));
-        //new Graph(trainSet, "Data Hoax");        
+        new Graph(trainSet, "Data Hoax");        
         
-        validSet = (ArrayList<Data>) trainSet.clone();       
+        //data validasi
+        validSet.add(new Data("B01", 97, 74, 1));
+        validSet.add(new Data("B02", 36, 85, 1));
+        validSet.add(new Data("B03", 63, 43, 0));
+        validSet.add(new Data("B04", 82, 90, 1));
+        validSet.add(new Data("B05", 71, 25, 0));
+        validSet.add(new Data("B06", 79, 81, 1));
+        validSet.add(new Data("B07", 55, 62, 0));
+        validSet.add(new Data("B08", 57, 45, 0));
+        validSet.add(new Data("B09", 40, 65, 0));
+        validSet.add(new Data("B10", 57, 45, 0));
+        validSet.add(new Data("B11", 77, 70, 1));
+        validSet.add(new Data("B12", 68, 75, 1));
+        validSet.add(new Data("B13", 60, 70, 0));
+        validSet.add(new Data("B14", 82, 90, 1));
+        validSet.add(new Data("B15", 40, 85, 0));
+        validSet.add(new Data("B16", 80, 68, 1));
+        validSet.add(new Data("B17", 60, 72, 0));
+        validSet.add(new Data("B18", 50, 95, 1));
+        validSet.add(new Data("B19", 100, 18, 0));
+        validSet.add(new Data("B20", 11, 99, 1));
         
         Logic fuzzyLogic = new Logic();
         for(int i=0; i<validSet.size(); i++){
-            validSet.set(i,fuzzyLogic.ExecuteFuzzy(validSet.get(i)));
+            Data dat = validSet.get(i);
+            validSet.set(i,fuzzyLogic.ExecuteFuzzy(dat));
         }
                 
         new Graph(validSet, "Data Validasi");        
+        
+        //akurasi validasi
+        int benar=0;
+        for(int i=0; i<validSet.size(); i++){
+            if(validSet.get(i).getHoax()==trainSet.get(i).getHoax()){
+                benar++;
+            }
+        }
+        
+        System.out.println("benar :"+benar);
+        System.out.println("total :"+validSet.size());
         
         //data test
         testSet.clear();

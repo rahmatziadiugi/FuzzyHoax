@@ -41,8 +41,7 @@ public class Graph extends JFrame {
                 points2.add(i);
             }
         }
-                        
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         DefaultXYDataset dataset = new DefaultXYDataset();
         dataset.addSeries("Tidak", createSeries(points1));
         dataset.addSeries("Ya", createSeries(points2));

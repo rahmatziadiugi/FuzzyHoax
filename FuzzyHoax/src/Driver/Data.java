@@ -30,19 +30,19 @@ public class Data {
     }
 
     public String getBerita() {
-        return berita;
+        return this.berita;
     }
 
     public int getEmosi() {
-        return emosi;
+        return this.emosi;
     }
 
     public int getProvokasi() {
-        return provokasi;
+        return this.provokasi;
     }
 
     public int getHoax() {
-        return hoax;
+        return this.hoax;
     }
 
     public void setHoax(int hoax) {
