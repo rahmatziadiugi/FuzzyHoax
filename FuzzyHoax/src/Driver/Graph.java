@@ -29,16 +29,26 @@ import org.jfree.data.xy.XYDataset;
 public class Graph extends JFrame {  
     private double[][] xy = null;
         
-    public Graph(ArrayList<Data> data, String title){
+    public Graph(ArrayList<Data> data, int k, String title){
         super(title);
         ArrayList<Data> points1 = new ArrayList<>();
         ArrayList<Data> points2 = new ArrayList<>();        
         
-        for(Data i : data){
-            if(i.getHoax()<1){ //hoax=0 -> tidak
-                points1.add(i);
-            }else{
-                points2.add(i);
+        if(k<1){ //k=0, data asli
+            for(Data i : data){
+                if(i.getHoax()<1){ //hoax=0 -> tidak
+                    points1.add(i);
+                }else{
+                    points2.add(i);
+                }
+            }
+        }else{ //k=1, hasil fuzzy
+            for(Data i : data){
+                if(i.getResult()<1){ //hoax=0 -> tidak
+                    points1.add(i);
+                }else{
+                    points2.add(i);
+                }
             }
         }
         

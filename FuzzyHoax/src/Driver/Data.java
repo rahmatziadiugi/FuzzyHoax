@@ -15,6 +15,7 @@ public class Data {
     private int emosi;
     private int provokasi;
     private int hoax; //0=tidak, 1=iya
+    private int result;
 
     public Data(String berita, int emosi, int provokasi) {
         this.berita = berita;
@@ -48,5 +49,12 @@ public class Data {
     public void setHoax(int hoax) {
         this.hoax = hoax;
     }
-        
+
+    public void setResult(int result) {
+        this.result = result;
+    }
+
+    public int getResult() {
+        return result;
+    }
 }
