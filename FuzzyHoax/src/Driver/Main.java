@@ -62,8 +62,10 @@ public class Main {
             }
         }
         
+        System.out.println("Validasi");
         System.out.println("benar :"+benar);
         System.out.println("total :"+validSet.size());
+        System.out.println("akurasi :"+(benar*100.0/validSet.size())+"%");
         
         //data test
         testSet.clear();
@@ -77,7 +79,13 @@ public class Main {
         testSet.add(new Data("B28", 50, 95));
         testSet.add(new Data("B29", 95, 55));
         testSet.add(new Data("B30", 27, 79));
-        //new Graph(testSet, 1, "Data Test");
+        
+        for(int i=0; i<testSet.size(); i++){
+            Data dat = testSet.get(i);
+            testSet.set(i,fuzzyLogic.ExecuteFuzzy(dat));
+        }
+        
+        new Graph(testSet, 1, "Data Test");
     }
     
 }

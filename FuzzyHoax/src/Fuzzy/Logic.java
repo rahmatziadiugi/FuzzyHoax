@@ -40,7 +40,8 @@ public class Logic {
         inference();        
         
         /*---Defuzzification---*/        
-        data.setHoax(mamdani());
+//        System.out.print(data.getHoax()+" ");
+        data.setResult(mamdani());
 //        data.setHoax(sugeno());
         
         return data;        
@@ -48,36 +49,62 @@ public class Logic {
     
     /*---Fuzzification---*/
     /*
+    u:uphill, d:downhill
+    
     emosi          
-    0:rendah:0-50 | 0-30(1); 30-50(downhill)
-    1:sedang:30-80 | 30-50(uphill); 50-70(1); 70-80(downhill)
-    2:tinggi:70-100 | 70-80(uphill); 80-100(1)
+    0:0-40 | 0-30(1); 30-40(d)
+    1:30-50 | 30-40(u); 40-50(d)
+    2:40-60 | 40-50(u); 50-60(d)
+    3:50-70 | 50-60(u); 60-70(d)
+    4:60-80 | 60-70(u); 70-80(d)
+    5:70-90 | 70-80(u); 80-90(d)
+    6:90-100 | 90-100(u)
     
     provokasi
-    0:sedikit:0-70 | 0-50(1); 50-70(downhill)
-    1:banyak:50-100 | 50-80(uphill); 80-100(1)
+    0:0-60 | 0-50(1); 50-60(d)
+    1:50-80 | 50-60(u); 60-70(1); 70-80(d)
+    2:70-90 | 70-80(u); 80-90(d)
+    3:80-100 | 80-90(up); 90-100(1)
     */
     private void fuzzification(Data data){
         //input emosi
         int n = data.getEmosi();
+        
         if(n<30){
             this.inputxno.add(0);
             this.valx.add(1.0);
-        }else if(n<50){
+        }else if(n<40){
             this.inputxno.add(0);
-            this.valx.add(this.calcDownhill(30, 50, n));
+            this.valx.add(this.calcDownhill(30, 40, n));
             this.inputxno.add(1);
-            this.valx.add(this.calcUphill(30, 50, n));
+            this.valx.add(this.calcUphill(30, 40, n));
+        }else if (n<50){
+            this.inputxno.add(1);
+            this.valx.add(this.calcDownhill(40, 50, n));
+            this.inputxno.add(2);
+            this.valx.add(this.calcUphill(40, 50, n));
+        }else if (n<60){
+            this.inputxno.add(2);
+            this.valx.add(this.calcDownhill(50, 60, n));
+            this.inputxno.add(3);
+            this.valx.add(this.calcUphill(50, 60, n));
         }else if (n<70){
-            this.inputxno.add(1);
-            this.valx.add(1.0);
+            this.inputxno.add(3);
+            this.valx.add(this.calcDownhill(60, 70, n));
+            this.inputxno.add(4);
+            this.valx.add(this.calcUphill(60, 70, n));
         }else if (n<80){
-            this.inputxno.add(1);
+            this.inputxno.add(4);
             this.valx.add(this.calcDownhill(70, 80, n));
-            this.inputxno.add(2);
+            this.inputxno.add(5);
             this.valx.add(this.calcUphill(70, 80, n));
+        }else if (n<90){
+            this.inputxno.add(5);
+            this.valx.add(this.calcDownhill(80, 90, n));
+            this.inputxno.add(6);
+            this.valx.add(this.calcUphill(80, 90, n));
         }else{
-            this.inputxno.add(2);
+            this.inputxno.add(6);
             this.valx.add(1.0);
         }
         
@@ -86,47 +113,31 @@ public class Logic {
         if(n<50){
             this.inputyno.add(0);
             this.valy.add(1.0);
-        }else if(n<70){
+        }else if(n<60){
             this.inputyno.add(0);
-            this.valy.add(this.calcDownhill(50, 70, n));
+            this.valy.add(this.calcDownhill(50, 60, n));
             this.inputyno.add(1);
-            this.valy.add(this.calcUphill(50, 70, n));
-        }else{
+            this.valy.add(this.calcUphill(50, 60, n));
+        }else if(n<70){            
             this.inputyno.add(1);
             this.valy.add(1.0);
+        }else if(n<80){
+            this.inputyno.add(1);
+            this.valy.add(this.calcDownhill(70, 80, n));
+            this.inputyno.add(2);
+            this.valy.add(this.calcUphill(70, 80, n));
+        }else if(n<90){
+            this.inputyno.add(2);
+            this.valy.add(this.calcDownhill(80, 90, n));
+            this.inputyno.add(3);
+            this.valy.add(this.calcUphill(80, 90, n));
+        }else{
+            this.inputyno.add(3);
+            this.valy.add(1.0);
         }
-    }
+    }    
     
-    private double calcUphill(int a, int b, int c){
-        /*        
-          /|
-         /||
-        / ||
-        a cb
-        linear
-        */        
-        return 1.0 * (c-a) / (b-a);
-    }
-    
-    private double calcDownhill(int a, int b, int c){
-        /*        
-        |\
-        ||\
-        || \
-        ac b
-        linear
-        */
-        return 1.0 * (b-c) / (b-a);
-    }
-    
-    
-    /*---Inference---*/
-    /*
-    y\x|0|1|2
-      0|0|0|1
-      1|0|1|0
-    
-    */
+    /*---Inference---*/    
     private void inference(){
         for(int i=0; i<this.inputxno.size(); i++){
             for(int j=0; j<this.inputyno.size(); j++){
@@ -135,13 +146,36 @@ public class Logic {
         }
     }
     
+    /*
+    p=y, e=x
+    p\e|0|1|2|3|4|5|6
+      0|0|0|0|0|0|0|0
+      1|0|0|0|0|1|1|1
+      2|0|1|1|0|1|1|1
+      3|1|1|1|1|1|1|1
+    
+    */
     private void inferenceTab(int x, int y){
-        if(this.inputxno.get(x)==0 && this.inputyno.get(y)==2){
-            this.inputino.add(1);            
-        }else if (this.inputxno.get(x)==1 && this.inputyno.get(y)==1){
+        if(this.inputyno.get(y)==0){
+            this.inputino.add(0);
+        }else if(this.inputyno.get(y)==3){
+            this.inputino.add(1);      
+        }else if (this.inputxno.get(x)==1 && this.inputyno.get(y)==2){
             this.inputino.add(1);
-//        }else if (this.inputxno.get(x)==1 && this.inputyno.get(y)==2){
-//            this.inputino.add(1);
+        }else if(this.inputxno.get(x)==2 && this.inputyno.get(y)==2){
+            this.inputino.add(1);   
+        }else if (this.inputxno.get(x)==4 && this.inputyno.get(y)==1){
+            this.inputino.add(1);
+        }else if (this.inputxno.get(x)==4 && this.inputyno.get(y)==2){
+            this.inputino.add(1);
+        }else if (this.inputxno.get(x)==5 && this.inputyno.get(y)==1){
+            this.inputino.add(1);
+        }else if (this.inputxno.get(x)==5 && this.inputyno.get(y)==2){
+            this.inputino.add(1);
+        }else if (this.inputxno.get(x)==6 && this.inputyno.get(y)==1){
+            this.inputino.add(1);
+        }else if (this.inputxno.get(x)==6 && this.inputyno.get(y)==2){
+            this.inputino.add(1);
         }else{
             this.inputino.add(0);
         }
@@ -177,11 +211,11 @@ public class Logic {
         // a+b/c+d
         double a=0.0, b=0.0, c=0.0, d=0.0;
         
-        for(int i=0; i<=40; i+=2){
+        for(int i=0; i<=30; i+=2){
             a+=(i*layak0);
             c+=layak0;
         }
-        for(int i=42; i<=50; i+=2){
+        for(int i=32; i<=40; i+=2){
             double t= (70-i)*1.0/70-50;
             if(layak0<t && layak0>layak1){
                 a+=(i*layak0);
@@ -194,7 +228,7 @@ public class Logic {
                 c+=t;
             }
         }
-        for(int i=52; i<=60; i+=2){
+        for(int i=42; i<=50; i+=2){
             double t= (i-50)*1.0/70-50;
             if(layak0<t && layak0>layak1){
                 a+=(i*layak0);
@@ -207,30 +241,16 @@ public class Logic {
                 c+=t;
             }
         }
-        for(int i=62; i<=100; i+=2){
+        for(int i=52; i<=100; i+=2){
             b+=(i*layak1);
             d+=layak1;
         }               
                 
-//        if(this.layak0<this.layak1){
-//            a=(10+20+30+40)*layak0;
-//            b=(50+60+70+80+90+100)*layak1;
-//            c=4*layak0;
-//            d=6*layak1;
-//        }else{
-//            a=(10+20+30+40+50+60)*layak0;
-//            b=(60+70+80+90+100)*layak1;
-//            c=6*layak0;
-//            d=4*layak1;
-//        }
-        
         double y = (a+b)/(c+d);    
         
-        System.out.println(y);
-        
-//        return y;
-                
-        if(y>50.0){
+//        System.out.println(y);
+                        
+        if(y>40){
             return 1;
         }else{
             return 0;
@@ -240,4 +260,28 @@ public class Logic {
     private int sugeno(){
         return 0;
     }    
+    
+    
+    
+    private double calcUphill(int a, int b, int c){
+        /*        
+          /|
+         /||
+        / ||
+        a cb
+        linear
+        */        
+        return 1.0 * (c-a) / (b-a);
+    }
+    
+    private double calcDownhill(int a, int b, int c){
+        /*        
+        |\
+        ||\
+        || \
+        ac b
+        linear
+        */
+        return 1.0 * (b-c) / (b-a);
+    }
 }
