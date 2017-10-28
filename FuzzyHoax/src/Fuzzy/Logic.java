@@ -52,19 +52,19 @@ public class Logic {
     u:uphill, d:downhill
     
     emosi          
-    0:0-40 | 0-30(1); 30-40(d)
-    1:30-50 | 30-40(u); 40-50(d)
-    2:40-60 | 40-50(u); 50-60(d)
-    3:50-70 | 50-60(u); 60-70(d)
-    4:60-80 | 60-70(u); 70-80(d)
-    5:70-90 | 70-80(u); 80-90(d)
-    6:90-100 | 90-100(u)
+    A:0:0-40 | 0-30(1); 30-40(d)
+    B:1:30-50 | 30-40(u); 40-50(d)
+    C:2:40-60 | 40-50(u); 50-60(d)
+    D:3:50-70 | 50-60(u); 60-70(d)
+    E:4:60-80 | 60-70(u); 70-80(d)
+    F:5:70-90 | 70-80(u); 80-90(d)
+    G:6:80-100 | 80-90(u); 90-100(1)
     
     provokasi
-    0:0-60 | 0-50(1); 50-60(d)
-    1:50-80 | 50-60(u); 60-70(1); 70-80(d)
-    2:70-90 | 70-80(u); 80-90(d)
-    3:80-100 | 80-90(up); 90-100(1)
+    I:0:0-60 | 0-50(1); 50-60(d)
+    J:1:50-80 | 50-60(u); 60-70(1); 70-80(d)
+    K:2:70-90 | 70-80(u); 80-90(d)
+    L:3:80-100 | 80-90(up); 90-100(1)
     */
     private void fuzzification(Data data){
         //input emosi
@@ -148,19 +148,21 @@ public class Logic {
     
     /*
     p=y, e=x
-    p\e|0|1|2|3|4|5|6
-      0|0|0|0|0|0|0|0
-      1|0|0|0|0|1|1|1
-      2|0|1|1|0|1|1|1
-      3|1|1|1|1|1|1|1
-    
+    p\e|A|B|C|D|E|F|G
+      I|N|N|N|N|N|N|N
+      J|Y|N|N|N|Y|Y|Y
+      K|Y|N|Y|N|Y|Y|Y
+      L|Y|Y|Y|Y|Y|Y|Y
+    N:0 Y:1
     */
     private void inferenceTab(int x, int y){
         if(this.inputyno.get(y)==0){
             this.inputino.add(0);
         }else if(this.inputyno.get(y)==3){
             this.inputino.add(1);      
-        }else if (this.inputxno.get(x)==1 && this.inputyno.get(y)==2){
+        }else if (this.inputxno.get(x)==0 && this.inputyno.get(y)==1){
+            this.inputino.add(1);
+        }else if (this.inputxno.get(x)==0 && this.inputyno.get(y)==2){
             this.inputino.add(1);
         }else if(this.inputxno.get(x)==2 && this.inputyno.get(y)==2){
             this.inputino.add(1);   
@@ -190,7 +192,7 @@ public class Logic {
     /*---Defuzzification---*/
     /*
     mamdani
-    0:rendah:0-80 | 0-40(1); 0-60(downhill)
+    0:rendah:0-60 | 0-40(1); 0-60(downhill)
     1:tinggi:50-100 | 40-60(uphill); 60-100(1)
     */
     private int mamdani(){
@@ -249,11 +251,12 @@ public class Logic {
         double y = (a+b)/(c+d);    
         
 //        System.out.println(y);
-                        
+        
+        //Threshold = 40
         if(y>40){
-            return 1;
+            return 1; //Hoax
         }else{
-            return 0;
+            return 0; //Bukan hoax
         }
     }
     

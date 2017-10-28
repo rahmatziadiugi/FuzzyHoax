@@ -85,6 +85,12 @@ public class Main {
             testSet.set(i,fuzzyLogic.ExecuteFuzzy(dat));
         }
         
+        System.out.println("\n Data Test");
+        System.out.println("Berita\tEmosi\tProvokasi\tHoax");
+        for(Data i: testSet){
+            System.out.println(i.getBerita()+"\t"+i.getEmosi()+"\t"+i.getProvokasi()+"\t"+i.getResult());
+        }
+        
         new Graph(testSet, 1, "Data Test");
     }
     
